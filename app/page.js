@@ -2,22 +2,29 @@
 import {useState, useRef, useEffect} from 'react';
 
 export default function App() {
-  const [answers, setAnswers] = useState(Array(6).fill(null));
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isGameOver, setGameOver] = useState(false);
   function submitAnswer(e) {
     e.preventDefault()
-    setActiveIndex(activeIndex + 1);
+    console.log("submit");
+    const answer = e.target[activeIndex].value;
+    if(testGuess(answer)){
+      setGameOver(true);
+    } else{
+      setActiveIndex(activeIndex + 1);
+    }
   }
   function getBoxStatus(index){
     return (
-    activeIndex === index ? "active": 
+    (activeIndex === index && !isGameOver) ? "active": 
     activeIndex > index ? "wrong" : 
-    "pending")
+    activeIndex < index ? "pending":
+    "correct")
   }
   return (
     <form onSubmit={e => submitAnswer(e)} className="flex flex-col w-screen h-screen items-center justify-center justify-items-center bg-zinc-900">
       <div className="flex flex-col space-y-3 h-[40%] w-[70%]">
-        {answers.map((_, i) => 
+        {new Array(6).fill(null).map((_, i) => 
           <Guess key={i} status={getBoxStatus(i)}></Guess>
         )}
       </div>
@@ -46,9 +53,11 @@ function getColor(status) {
       return "border-red-800";
     case "pending":
       return "border-gray-600";
+    case "correct":
+      return "border-green-500";
   }
 }
 
 function testGuess(guess) {
-  return guess === "nene";
+  return guess === "correct answer";
 }
