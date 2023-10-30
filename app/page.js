@@ -1,13 +1,20 @@
 'use client'
 import {useState, useRef, useEffect} from 'react';
+import { Lora, Inter } from '@next/font/google'
+
+const lora = Lora({
+  subsets: ['latin'],
+})
+const inter = Inter({
+  subsets: ['latin'],
+})
 
 export default function App() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
   function submitAnswer(e) {
     e.preventDefault()
-    console.log("submit");
-    const answer = e.target[activeIndex].value;
+    const answer = e.target[activeIndex]?.value;
     if(testGuess(answer)){
       setGameOver(true);
     } else{
@@ -22,14 +29,14 @@ export default function App() {
     "correct")
   }
   return (
-    <form onSubmit={e => submitAnswer(e)} className="flex flex-col w-screen h-screen items-center justify-center justify-items-center bg-zinc-900">
-      <div className="flex flex-col space-y-3 h-[40%] w-[70%]">
+    <form onSubmit={e => submitAnswer(e)} className="flex flex-col w-screen h-screen items-center space-y-8 justify-center justify-items-center bg-zinc-900">
+      <div className="flex flex-col space-y-3 h-[40%] w-[55%]">
         {new Array(6).fill(null).map((_, i) => 
           <Guess key={i} status={getBoxStatus(i)}></Guess>
         )}
       </div>
-      <div>
-        <button className="bg-gray-300 border rounded-sm">Submit Answer</button>
+      <div className="w-[10%] h-[5%]">
+        <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} bg-white border rounded-sm w-full h-full text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
       </div>
     </form>
   )
@@ -40,9 +47,9 @@ function Guess( {status} ) {
   const inputRef = useRef(null);
   const isActive = status === "active";
   useEffect(() => {
-    isActive && inputRef.current.focus();
+    setTimeout(() => isActive && inputRef.current.focus(), 75);
   }, [isActive]);
-  return <input required ref={inputRef} disabled={!isActive} value={answer} className={`bg-transparent border ${getColor(status)} text-white h-[10%]`} onChange={e => setAnswer(e.target.value)}></input>
+  return <input required spellCheck={false} ref={inputRef} disabled={!isActive} value={answer} className={`${lora.className} text-3xl bg-transparent border-2 rounded-sm ${getColor(status)} text-white h-[15%] transition-colors duration-150 outline-none px-2 tracking-wide selection:bg-gray-50 selection:text-black`} onChange={e => setAnswer(e.target.value)}></input>
 }
 
 function getColor(status) {
@@ -52,7 +59,7 @@ function getColor(status) {
     case "wrong":
       return "border-red-800";
     case "pending":
-      return "border-gray-600";
+      return "border-zinc-700";
     case "correct":
       return "border-green-500";
   }
