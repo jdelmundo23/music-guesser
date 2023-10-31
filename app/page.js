@@ -1,6 +1,6 @@
 'use client'
 import {useState, useRef, useEffect} from 'react';
-import { Lora, Inter } from '@next/font/google'
+import { Lora, Inter } from "next/font/google"
 
 const lora = Lora({
   subsets: ['latin'],
