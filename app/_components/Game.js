@@ -19,7 +19,7 @@ export default function Game() {
         }
       }
 
-    return <form onSubmit={e => submitAnswer(e)} className="flex flex-col w-screen h-screen items-center space-y-8 justify-center justify-items-center bg-zinc-900">
+    return <form onSubmit={e => submitAnswer(e)} className="">
         <div className="flex flex-col space-y-3 h-[40%] w-[55%]">
             {new Array(6).fill(null).map((_, i) =>
                 <Guess key={i} status={getBoxStatus(i, activeIndex, isGameOver)}></Guess>
