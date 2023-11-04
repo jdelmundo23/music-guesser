@@ -1,6 +1,8 @@
+'use client'
+
 import { useState, useEffect, useRef } from 'react';
 
-export default function Search({ token, onSelect }) {
+export default function Search({ token }) {
     const [query, setQuery] = useState('');
     const [artists, setArtists] = useState([]);
     const [currSelect, setSelect] = useState('');

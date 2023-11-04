@@ -1,4 +1,6 @@
 'use client'
+
+
 import { useState } from 'react'
 import Guess from "./Guess.js"
 import { Inter } from "next/font/google"

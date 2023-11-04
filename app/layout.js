@@ -4,8 +4,6 @@ export const metadata = {
   description: 'Music guessing app',
 }
 
-
-
 export default function RootLayout({ children }) {
  return (
     <html lang="en">
