@@ -10,9 +10,10 @@ export default function Search({ token }) {
     const inputRef = useRef(null);
     useEffect(() => {
         (async () => {
-            if (token && query) {
-                const data = await searchArtists(query, token);
-                setArtists(data);
+            if (query) {
+                const result = await fetch(`api/artists/${query}`, { cache: 'no-cache'});
+                const data = await result.json();
+                setArtists(data.artists);
             }
         })();
     }, [query]);
@@ -21,7 +22,7 @@ export default function Search({ token }) {
             <div className={`h-64`}>
                 {currSelect &&
                     <div className='h-full flex flex-col items-center justify-between'>
-                        <img className='w-44' src={currSelect.imageURL}></img>
+                        <img className='w-44  border border-black rounded-md shadow-lg' src={currSelect.imageURL}></img>
                         <p className="text-white text-xl">{currSelect.name}</p>
                     </div>
                 }
@@ -37,11 +38,3 @@ export default function Search({ token }) {
     )
 }
 
-async function searchArtists(query, token) {
-    const result = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=artist&limit=5`, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token }
-    })
-    const data = await result.json();
-    return data.artists.items;
-}
