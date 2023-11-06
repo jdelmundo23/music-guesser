@@ -20,14 +20,14 @@ export default function Game() {
         }
       }
 
-    return <form onSubmit={e => submitAnswer(e)} className="">
-        <div className="flex flex-col space-y-3 h-[40%] w-[55%]">
+    return <form onSubmit={e => submitAnswer(e)} className="flex flex-col w-[40%]">
+        <div className="flex flex-col gap-y-3">
             {new Array(6).fill(null).map((_, i) =>
                 <Guess key={i} status={getBoxStatus(i, activeIndex, isGameOver)}></Guess>
             )}
         </div>
-        <div className="w-40 h-[5%]">
-            <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} bg-white border rounded-sm w-full h-full text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
+        <div className="flex justify-center">
+            <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} h-12 bg-white border rounded-sm w-[30%] text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
         </div>
     </form>
 }
