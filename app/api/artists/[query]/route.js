@@ -5,7 +5,7 @@ export async function GET(req, { params }) {
     const query = params.query;
 
     if (token) {
-        const result = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=artist&limit=5`, {
+        const result = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=artist&limit=6`, {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + token }
         })

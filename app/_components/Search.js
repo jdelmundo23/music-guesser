@@ -1,16 +1,17 @@
 'use client'
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { Inter } from "next/font/google"
 
 const inter = Inter({
-  subsets: ['latin'],
+    subsets: ['latin'],
 })
 
 export default function Search({ onChoose }) {
     const [query, setQuery] = useState('');
     const [artists, setArtists] = useState([]);
-    const [currSelect, setSelect] = useState('');
+    const [selectedIndex, setSelected] = useState(null);
     const [focused, setFocused] = useState(false);
+    const [isLoading, setLoading] = useState(true);
     const inputRef = useRef(null);
     useEffect(() => {
         (async () => {
@@ -22,6 +23,8 @@ export default function Search({ onChoose }) {
                         throw new Error(data.error)
                     }
                     setArtists(data.artists);
+                    setLoading(false);
+                    setSelected(null);
                 }
                 catch (error) {
                     console.error(error);
@@ -29,39 +32,26 @@ export default function Search({ onChoose }) {
             }
         })();
     }, [query]);
+
     return (
-        <div className={`${inter.className} h-[55%] flex flex-col items-center`}>
-            {/* <div className={`h-64`}>
-                {currSelect &&
-                    <div className='h-full flex flex-col items-center justify-between'>
-                        <img className='w-44  border border-black rounded-md shadow-lg' src={currSelect.imageURL}></img>
-                        <p className="text-white text-xl">{currSelect.name}</p>
-                    </div>
-                }
+        <div className={`${inter.className} h-[75%] w-[80%] flex flex-col items-center gap-y-8`}>
+            <h1 className='text-white text-3xl'>Choose an artist:</h1>
+            <div className={`w-[25%] h-8`}>
+                <input ref={inputRef} className={`w-full h-full rounded-sm text-xl`} value={query} onChange={e => { setQuery(e.target.value), setLoading(true) }} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}></input>
             </div>
-            <input ref={inputRef} className={`w-full`} value={query} onChange={e => { setQuery(e.target.value) }} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}></input>
-            {focused && <ul className="absolute">
-                {(query && artists) && artists.map(artist => {
-                    return <li key={artist.id} onMouseDown={e=> e.preventDefault()}onClick={() => { setSelect({ id: artist.id, name: artist.name, imageURL: artist.images[1]?.url }); setQuery(artist.name);inputRef.current.blur()}} className="cursor-pointer bg-white border border-black">{artist.name}</li>
-                })}
-            </ul>}ß
-            <button className='w-9/12 bg-green-400'>jo</button> */}
-            <div className='h-44 mb-20'>
-                {currSelect &&
-                    <div className='h-full flex flex-col items-center justify-between'>
-                        <img className='w-44  border border-black rounded-md shadow-lg' src={currSelect.imageURL}></img>
-                    </div>
-                }
-            </div>
-            <div>
-                <input ref={inputRef} className={`w-full rounded-sm`} value={query} onChange={e => { setQuery(e.target.value) }} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}></input>
-                {focused && <ul className="absolute">
-                    {(query && artists) && artists.map(artist => {
-                        return <li key={artist.id} onMouseDown={e => e.preventDefault()} onClick={() => { setSelect({ id: artist.id, name: artist.name, imageURL: artist.images[1]?.url }); setQuery(artist.name); inputRef.current.blur() }} className="cursor-pointer bg-white border border-black">{artist.name}</li>
-                    })}
-                </ul>}
-            </div>
-            <button className='w-9/12 bg-green-400 mt-7' onClick={() => onChoose(currSelect.id)}>Start Game</button>
+            <ul key={query} className={`flex gap-2`}>
+                {(query && !isLoading) ? artists.map((artist, i) => {
+                    return (
+                        <li key={artist.id} onClick={() => setSelected(i)} className={`border ${i === selectedIndex ? 'border-white' : 'border-black'} bg-black p-4 rounded-lg flex flex-col items-center gap-y-3 w-40 h-60 cursor-pointer`}>
+                            <div className='w-32 h-32'>
+                                <img src={artist.images[1]?.url} className={`rounded-full w-full h-full object-cover border border-zinc-900`} ></img>
+                            </div>
+                            <h1 className="text-white text-center">{artist.name}</h1>
+                        </li>
+                    )
+                }) : <p className="text-white"></p>}
+            </ul>
+            {(selectedIndex != null && query && !isLoading) && <button onClick={() => onChoose(artists[selectedIndex].id)} className='bg-white rounded-sm text-3xl p-2'>Start Game</button>}
         </div>
     )
 }
