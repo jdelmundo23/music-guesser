@@ -10,11 +10,10 @@ export default function Search({ onChoose }) {
     const [query, setQuery] = useState('');
     const [artists, setArtists] = useState([]);
     const [selectedIndex, setSelected] = useState(null);
-    const [focused, setFocused] = useState(false);
     const [isLoading, setLoading] = useState(true);
     const inputRef = useRef(null);
     useEffect(() => {
-        (async () => {
+        async function useQuery() {
             if (query) {
                 try {
                     const result = await fetch(`api/artists/${query}`, { cache: 'no-cache' });
@@ -30,14 +29,16 @@ export default function Search({ onChoose }) {
                     console.error(error);
                 }
             }
-        })();
+        }
+        const delayFetch = setTimeout(() => useQuery(), 500);
+        return () => clearTimeout(delayFetch);
     }, [query]);
 
     return (
         <div className={`${inter.className} h-[75%] w-[80%] flex flex-col items-center gap-y-8`}>
             <h1 className='text-white text-3xl'>Choose an artist:</h1>
             <div className={`w-[25%] h-8`}>
-                <input ref={inputRef} className={`w-full h-full rounded-sm text-xl`} value={query} onChange={e => { setQuery(e.target.value), setLoading(true) }} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}></input>
+                <input ref={inputRef} className={`w-full h-full rounded-sm text-xl`} value={query} onChange={e => { setQuery(e.target.value), setLoading(true) }}></input>
             </div>
             <ul key={query} className={`flex gap-2`}>
                 {(query && !isLoading) ? artists.map((artist, i) => {
