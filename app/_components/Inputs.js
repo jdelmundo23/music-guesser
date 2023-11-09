@@ -1,26 +1,33 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Guess from "./Guess.js"
 import { Inter } from "next/font/google"
 
 const inter = Inter({
-  subsets: ['latin'],
+    subsets: ['latin'],
 })
 
-export default function Game() {
+export default function Inputs({ gameInfo }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isGameOver, setGameOver] = useState(false);
+    const [game, setGame] = useState('')
+    useEffect(() => {
+        (async () => {
+            setGame(await gameInfo);
+        })();
+    }, [])
     function submitAnswer(e) {
         e.preventDefault()
         const answer = e.target[activeIndex]?.value;
-        if (testGuess(answer)) {
-          setGameOver(true);
+        if (game.testAnswer(answer)) {
+            setGameOver(true);
         } else {
-          setActiveIndex(activeIndex + 1);
+            setActiveIndex(activeIndex + 1);
         }
-      }
+    }
 
     return <form onSubmit={e => submitAnswer(e)} className="flex flex-col w-[40%]">
+        {game && <h1 className='text-white'>{game.getAnswer()}</h1>}
         <div className="flex flex-col gap-y-3">
             {new Array(6).fill(null).map((_, i) =>
                 <Guess key={i} status={getBoxStatus(i, activeIndex, isGameOver)}></Guess>
@@ -38,8 +45,4 @@ function getBoxStatus(index, activeIndex, isGameOver) {
             activeIndex > index ? "wrong" :
                 activeIndex < index ? "pending" :
                     "correct")
-}
-
-function testGuess(guess) {
-    return guess === "correct answer";
 }
