@@ -15,7 +15,12 @@ export default function Inputs({ gameInfo }) {
         (async () => {
             setGame(await gameInfo);
         })();
+        
+        return () => {
+            
+        }
     }, [])
+    game && console.log(game.getAnswer());
     function submitAnswer(e) {
         e.preventDefault()
         const answer = e.target[activeIndex]?.value;
@@ -34,7 +39,7 @@ export default function Inputs({ gameInfo }) {
             )}
         </div>
         <div className="flex justify-center">
-            <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} h-12 bg-white border rounded-sm w-[30%] text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
+            <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} h-12 bg-white border rounded-sm w-44 text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
         </div>
     </form>
 }
