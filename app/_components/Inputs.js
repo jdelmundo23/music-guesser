@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Guess from "./Guess.js"
 import { Inter } from "next/font/google"
+import Player from "./Player.js"
 
 const inter = Inter({
     subsets: ['latin'],
@@ -17,10 +18,8 @@ export default function Inputs({ gameInfo }) {
         })();
         
         return () => {
-            
         }
     }, [])
-    game && console.log(game.getAnswer());
     function submitAnswer(e) {
         e.preventDefault()
         const answer = e.target[activeIndex]?.value;
@@ -41,6 +40,7 @@ export default function Inputs({ gameInfo }) {
         <div className="flex justify-center">
             <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} h-12 bg-white border rounded-sm w-44 text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
         </div>
+        {game && <Player link={game.getID()}/>}
     </form>
 }
 

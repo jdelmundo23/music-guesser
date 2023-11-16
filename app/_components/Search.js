@@ -41,7 +41,7 @@ export default function Search({ onChoose }) {
                 <input ref={inputRef} className={`w-full h-full rounded-sm text-xl`} value={query} onChange={e => { setQuery(e.target.value), setLoading(true) }}></input>
             </div>
             <ul key={query} className={`flex gap-2`}>
-                {(query && !isLoading) ? users.map((artist, i) => {
+                {(users && !isLoading) && users.map((artist, i) => {
                     return (
                         <li key={artist.id} onClick={() => setSelected(i)} className={`relative border ${i === selectedIndex ? 'border-white' : 'border-black'} bg-black p-4 rounded-lg flex flex-col items-center gap-y-3 w-40 h-60 cursor-pointer`}>
                             {artist.verified && <svg className='absolute top-1 right-1' width='24' height='24' xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" id="verified">
@@ -53,7 +53,8 @@ export default function Search({ onChoose }) {
                             <h1 className="text-white text-center">{artist.username}</h1>
                         </li>
                     )
-                }) : <p className="text-white"></p>}
+                })}
+                {(isLoading && query) && <p className='text-white'>Loading Users</p>}
             </ul>
             {(selectedIndex != null && query && !isLoading) && <button onClick={() => onChoose(users[selectedIndex].id)} className='bg-white rounded-sm text-3xl p-2'>Start Game</button>}
         </div>
