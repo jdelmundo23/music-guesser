@@ -9,7 +9,6 @@ export default function Player({ guessNum, link }) {
     const [startTime, setStartTime] = useState(0);
     const [progress, setProgress] = useState(0);
     const intervalRef = useRef(null);
-    console.log(Math.floor(progress*100) + '%');
 
     useEffect(() => {
         setCtx(new AudioContext());
@@ -22,7 +21,7 @@ export default function Player({ guessNum, link }) {
                 const progress = (elapsed / length);
                 setProgress(progress);
             }
-        }, 100)
+        }, 50)
 
         return () => clearInterval(intervalRef.current);
     }, [isPlaying, ctx, startTime, audioBuff])
@@ -34,13 +33,14 @@ export default function Player({ guessNum, link }) {
                 const buff = await result.arrayBuffer();
                 ctx.decodeAudioData(buff, (buffer) => {
                     setAudiobuff(cropAudioBuffer(buffer, ctx, 0, 30));
+                    setLoaded(true);
                 })
-                setLoaded(true);
             })()
         }
     }, [ctx])
 
     const startStreaming = () => {
+        setProgress(0);
         if (bufferSourceRef.current) {
             bufferSourceRef.current.stop();
         }
@@ -58,7 +58,6 @@ export default function Player({ guessNum, link }) {
         bufferSourceRef.current = bufferSource;
         bufferSource.onended = () => {
             setIsPlaying(false);
-            setProgress(0);
         }
         bufferSourceRef.current.stop(ctx.currentTime + time);
         setStartTime(ctx.currentTime);
@@ -74,9 +73,17 @@ export default function Player({ guessNum, link }) {
                         <polygon points="25,12 25,28 38,20" fill="black"></polygon>;
                     </svg>
                 </button> : <p>Loading Audio</p>}
-            <div className="bg-zinc-700 w-full h-2 relative">
-                <div className={`absolute top-0 left-0 bg-green-800 h-full`} style={{ width: `${(progress*100)}%` }}>
-                </div>
+            <div className="w-full h-2 relative">
+                <div className="bg-zinc-700 w-full h-2 absolute top-0 left-0 opacity-40"></div>
+                <div className="bg-zinc-700 absolute h-2 top-0 left-0" style={{ width: `${(((guessNum) * 2.5) / 30) * 100}%` }}></div>
+                <div className={`absolute top-0 left-0 bg-green-800 h-full`} style={{ width: `${(progress * 100)}%` }}></div>
+                {new Array(5).fill(0).map((_, i) => (
+                    <div
+                        key={i}
+                        className={`absolute h-full border-r border-gray-30`}
+                        style={{ left: `${(((i + 1) * 2.5) / 30) * 100}%` }}
+                    />
+                ))}
             </div>
         </div>
     )
