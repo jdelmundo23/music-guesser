@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Guess from "./Guess.js"
 import { Inter } from "next/font/google"
 import Player from "./Player.js"
@@ -16,9 +16,6 @@ export default function Inputs({ gameInfo }) {
         (async () => {
             setGame(await gameInfo);
         })();
-        
-        return () => {
-        }
     }, [])
     function submitAnswer(e) {
         e.preventDefault()
@@ -31,7 +28,7 @@ export default function Inputs({ gameInfo }) {
     }
 
     return <form onSubmit={e => submitAnswer(e)} className="flex flex-col w-[40%]">
-        {game && <h1 className='text-white'>{game.getAnswer()}</h1>}
+        {game && <h1 className='text-white'>{''}</h1>}
         <div className="flex flex-col gap-y-3">
             {new Array(6).fill(null).map((_, i) =>
                 <Guess key={i} status={getBoxStatus(i, activeIndex, isGameOver)}></Guess>
@@ -40,7 +37,7 @@ export default function Inputs({ gameInfo }) {
         <div className="flex justify-center">
             <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} h-12 bg-white border rounded-sm w-44 text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
         </div>
-        {game && <Player link={game.getID()}/>}
+        {game && <Player guessNum={activeIndex + 1} link={game.getID()}/>}
     </form>
 }
 

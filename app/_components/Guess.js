@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Lora } from 'next/font/google'
 
 const lora = Lora({
@@ -21,7 +21,7 @@ function getColor(status) {
             return "border-gray-300";
         case "wrong":
             return "border-red-800";
-        case "pending": 
+        case "pending":
             return "border-zinc-700";
         case "correct":
             return "border-green-500";

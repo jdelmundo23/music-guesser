@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Inputs from "./Inputs.js"
 import Search from "./Search.js"
 import createGame from 'app/_lib/gameInfo.js'
