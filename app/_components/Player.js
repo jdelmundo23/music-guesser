@@ -47,7 +47,7 @@ export default function Player({ guessNum, link }) {
         const bufferSource = ctx.createBufferSource();
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 2048;
-        const time = guessNum * 2.5;
+        const time = guessNum < 7 ? guessNum * 2.5 : 30;
 
         const buffer = cloneAudioBuffer(audioBuff, ctx);
 
@@ -75,8 +75,8 @@ export default function Player({ guessNum, link }) {
                 </button> : <p>Loading Audio</p>}
             <div className="w-full h-2 relative">
                 <div className="bg-zinc-700 w-full h-2 absolute top-0 left-0 opacity-40"></div>
-                <div className="bg-zinc-700 absolute h-2 top-0 left-0" style={{ width: `${(((guessNum) * 2.5) / 30) * 100}%` }}></div>
-                <div className={`absolute top-0 left-0 bg-green-800 h-full`} style={{ width: `${(progress * 100)}%` }}></div>
+                <div className="bg-zinc-700 absolute h-2 top-0 left-0" style={{ width: `${guessNum < 7 ? (((guessNum) * 2.5) / 30) * 100 : 100}%` }}></div>
+                <div className={`absolute top-0 left-0 bg-green-800 h-full transition-all duration-[25ms]`} style={{ width: `${(progress * 100)}%` }}></div>
                 {new Array(5).fill(0).map((_, i) => (
                     <div
                         key={i}

@@ -11,5 +11,8 @@ export default async function createGame(userID) {
         testAnswer: function (guess) {
             return track.title === guess
         },
+        getAllTracks: function () {
+            return data.toptracks;
+        },
     }
 }
