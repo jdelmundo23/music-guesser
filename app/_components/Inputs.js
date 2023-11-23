@@ -8,6 +8,8 @@ const inter = Inter({
     subsets: ['latin'],
 })
 
+const maxGuesses = 6;
+
 export default function Inputs({ gameInfo }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isGameOver, setGameOver] = useState(false);
@@ -18,7 +20,6 @@ export default function Inputs({ gameInfo }) {
             const info = await gameInfo;
             setGame(info);
             setAllTracks(info.getAllTracks());
-            console.log(info.getAllTracks())
         })();
     }, [])
     function submitAnswer(e) {
@@ -34,17 +35,16 @@ export default function Inputs({ gameInfo }) {
     return (
         <div className='w-[40%]'>
             <form onSubmit={e => submitAnswer(e)} className="flex flex-col ">
-                {game && <h1 className='text-white'>{''}</h1>}
                 <div className="flex flex-col gap-y-3">
-                    {new Array(6).fill(null).map((_, i) =>
+                    {new Array(maxGuesses).fill(null).map((_, i) =>
                         <Guess key={i} status={getBoxStatus(i, activeIndex, isGameOver)} tracks={allTracks}></Guess>
                     )}
                 </div>
                 <div className="flex justify-center">
-                    <button disabled={isGameOver || activeIndex > 5} className={`${inter.className} h-12 bg-white border rounded-sm w-44 text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
+                    <button disabled={isGameOver || activeIndex >= maxGuesses} className={`${inter.className} h-12 bg-white border rounded-sm w-44 text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
                 </div>
             </form>
-            {game && <Player guessNum={isGameOver ? 8 : activeIndex + 1} link={game.getID()} />}
+            {game && <Player guessNum={isGameOver ? -1 : activeIndex} link={game.getID()} maxGuesses={maxGuesses}/>}
         </div>
     )
 }

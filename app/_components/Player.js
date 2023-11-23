@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function Player({ guessNum, link }) {
+export default function Player({ guessNum, link, maxGuesses }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [ctx, setCtx] = useState('');
     const bufferSourceRef = useRef(null);
@@ -9,6 +9,8 @@ export default function Player({ guessNum, link }) {
     const [startTime, setStartTime] = useState(0);
     const [progress, setProgress] = useState(0);
     const intervalRef = useRef(null);
+
+    const times = calculateTimes(0.5, maxGuesses, 30)
 
     useEffect(() => {
         setCtx(new AudioContext());
@@ -47,7 +49,6 @@ export default function Player({ guessNum, link }) {
         const bufferSource = ctx.createBufferSource();
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 2048;
-        const time = guessNum < 7 ? guessNum * 2.5 : 30;
 
         const buffer = cloneAudioBuffer(audioBuff, ctx);
 
@@ -59,7 +60,7 @@ export default function Player({ guessNum, link }) {
         bufferSource.onended = () => {
             setIsPlaying(false);
         }
-        bufferSourceRef.current.stop(ctx.currentTime + time);
+        bufferSourceRef.current.stop(ctx.currentTime + times[guessNum]);
         setStartTime(ctx.currentTime);
         setIsPlaying(true);
     }
@@ -75,13 +76,13 @@ export default function Player({ guessNum, link }) {
                 </button> : <p>Loading Audio</p>}
             <div className="w-full h-2 relative">
                 <div className="bg-zinc-700 w-full h-2 absolute top-0 left-0 opacity-40"></div>
-                <div className="bg-zinc-700 absolute h-2 top-0 left-0" style={{ width: `${guessNum < 7 ? (((guessNum) * 2.5) / 30) * 100 : 100}%` }}></div>
+                <div className="bg-zinc-700 absolute h-2 top-0 left-0" style={{ width: `${(times[guessNum] / 30) * 100}%` }}></div>
                 <div className={`absolute top-0 left-0 bg-green-800 h-full transition-all duration-[25ms]`} style={{ width: `${(progress * 100)}%` }}></div>
                 {new Array(5).fill(0).map((_, i) => (
                     <div
                         key={i}
                         className={`absolute h-full border-r border-gray-30`}
-                        style={{ left: `${(((i + 1) * 2.5) / 30) * 100}%` }}
+                        style={{ left: `${(Math.pow(1.75,i+1) / 30) * 100}%` }}
                     />
                 ))}
             </div>
@@ -129,3 +130,15 @@ function cropAudioBuffer(originalBuffer, audioContext, startSeconds, endSeconds)
 
     return croppedBuffer;
 }
+
+const calculateTimes = (initial, maxGuesses, timeLimit) => {
+    const times = [];
+    const base = Math.pow(timeLimit / initial, 1 / maxGuesses);
+  
+    for (let i = 0; i < maxGuesses; i++) {
+        initial *= base;
+        times.push(Math.floor(initial));
+    }
+  
+    return times;
+};

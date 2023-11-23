@@ -22,7 +22,6 @@ export default function Search({ onChoose }) {
                         throw new Error(data.error)
                     }
                     setUsers(data.users);
-                    console.log(data.users);
                     setLoading(false);
                     setSelected(null);
                 }
