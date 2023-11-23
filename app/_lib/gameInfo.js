@@ -14,5 +14,8 @@ export default async function createGame(userID) {
         getAllTracks: function () {
             return data.toptracks;
         },
+        getAnswer: function () {
+            return track.title;
+        },
     }
 }

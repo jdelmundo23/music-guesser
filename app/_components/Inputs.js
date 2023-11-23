@@ -44,7 +44,8 @@ export default function Inputs({ gameInfo }) {
                     <button disabled={isGameOver || activeIndex >= maxGuesses} className={`${inter.className} h-12 bg-white border rounded-sm w-44 text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
                 </div>
             </form>
-            {game && <Player guessNum={isGameOver ? -1 : activeIndex} link={game.getID()} maxGuesses={maxGuesses}/>}
+            {game && <Player guessNum={isGameOver ? maxGuesses : activeIndex} link={game.getID()} maxGuesses={maxGuesses}/>}
+            {(isGameOver || (activeIndex >= maxGuesses)) && <div className='text-white'>{game.getAnswer()}</div>}
         </div>
     )
 }

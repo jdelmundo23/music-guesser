@@ -33,6 +33,7 @@ export default function Player({ guessNum, link, maxGuesses }) {
             (async () => {
                 const result = await fetch(`api/audio/${link}`)
                 const buff = await result.arrayBuffer();
+                console.log(buff);
                 ctx.decodeAudioData(buff, (buffer) => {
                     setAudiobuff(cropAudioBuffer(buffer, ctx, 0, 30));
                     setLoaded(true);
@@ -42,6 +43,7 @@ export default function Player({ guessNum, link, maxGuesses }) {
     }, [ctx])
 
     const startStreaming = () => {
+        console.log(times)
         setProgress(0);
         if (bufferSourceRef.current) {
             bufferSourceRef.current.stop();
@@ -82,7 +84,7 @@ export default function Player({ guessNum, link, maxGuesses }) {
                     <div
                         key={i}
                         className={`absolute h-full border-r border-gray-30`}
-                        style={{ left: `${(Math.pow(1.75,i+1) / 30) * 100}%` }}
+                        style={{ left: `${(times[i] / 30) * 100}%` }}
                     />
                 ))}
             </div>
@@ -137,8 +139,9 @@ const calculateTimes = (initial, maxGuesses, timeLimit) => {
   
     for (let i = 0; i < maxGuesses; i++) {
         initial *= base;
-        times.push(Math.floor(initial));
+        times.push(initial);
     }
+    times.push(timeLimit);
   
     return times;
 };
