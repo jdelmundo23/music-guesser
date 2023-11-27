@@ -1,31 +1,18 @@
 'use client'
 import { useEffect, useState, Suspense } from 'react'
 import Guess from "./Guess.js"
-import { Inter } from "next/font/google"
 import Player from "./Player.js"
-
-const inter = Inter({
-    subsets: ['latin'],
-})
+import Button from './Button.js'
 
 const maxGuesses = 6;
 
-export default function Inputs({ gameInfo }) {
+export default function Inputs({ gameInfo, resetGame, nextSong}) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isGameOver, setGameOver] = useState(false);
-    const [game, setGame] = useState('')
-    const [allTracks, setAllTracks] = useState([]);
-    useEffect(() => {
-        (async () => {
-            const info = await gameInfo;
-            setGame(info);
-            setAllTracks(info.getAllTracks());
-        })();
-    }, [])
     function submitAnswer(e) {
         e.preventDefault()
         const answer = e.target[activeIndex]?.value;
-        if (game.testAnswer(answer)) {
+        if (gameInfo.testAnswer(answer)) {
             setGameOver(true);
         } else {
             setActiveIndex(activeIndex + 1);
@@ -37,15 +24,21 @@ export default function Inputs({ gameInfo }) {
             <form onSubmit={e => submitAnswer(e)} className="flex flex-col ">
                 <div className="flex flex-col gap-y-3">
                     {new Array(maxGuesses).fill(null).map((_, i) =>
-                        <Guess key={i} status={getBoxStatus(i, activeIndex, isGameOver)} tracks={allTracks}></Guess>
+                        <Guess key={i} status={getBoxStatus(i, activeIndex, isGameOver)} tracks={gameInfo.getAllTracks()}></Guess>
                     )}
                 </div>
-                <div className="flex justify-center">
-                    <button disabled={isGameOver || activeIndex >= maxGuesses} className={`${inter.className} h-12 bg-white border rounded-sm w-44 text-3xl font-medium text-zinc-700 tracking-wider disabled:opacity-40 transition-colors duration-100`}>SUBMIT</button>
+                <div className="flex justify-center h-12">
+                    {!(isGameOver || activeIndex >= maxGuesses) ? 
+                    <Button onBtnClick={null} text='SUBMIT'/>
+                    :
+                    <>
+                        <Button onBtnClick={resetGame} text='NEW ARTIST'/>
+                        <Button onBtnClick={nextSong} text='NEXT SONG'/>
+                    </>}
                 </div>
             </form>
-            {game && <Player guessNum={isGameOver ? maxGuesses : activeIndex} link={game.getID()} maxGuesses={maxGuesses}/>}
-            {(isGameOver || (activeIndex >= maxGuesses)) && <div className='text-white'>{game.getAnswer()}</div>}
+            <Player guessNum={isGameOver ? maxGuesses : activeIndex} link={gameInfo.getID()} maxGuesses={maxGuesses}/>
+            {(isGameOver || (activeIndex >= maxGuesses)) && <div className='text-white'>{gameInfo.getAnswer()}</div>}
         </div>
     )
 }

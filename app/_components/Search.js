@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Inter } from "next/font/google"
 import UserCard from './UserCard.js'
+import Button from './Button.js'
 
 const inter = Inter({
     subsets: ['latin'],
@@ -42,7 +43,7 @@ export default function Search({ onChoose }) {
                 {(users && !isLoading) && users.map((artist, i) => <UserCard key={artist.id} artist={artist} onSelect={() => setSelected(i)} isSelected={i === selectedIndex} />)}
                 {(isLoading && query) && <p className='text-white'>Loading Users</p>}
             </ul>
-            {(selectedIndex != null && query && !isLoading) && <button onClick={() => onChoose(users[selectedIndex].id)} className='bg-white rounded-sm text-3xl p-2'>Start Game</button>}
+            {(selectedIndex != null && query && !isLoading) && <Button onBtnClick={() => onChoose(users[selectedIndex].id)} text='START'/>}
         </div>
     )
 }
