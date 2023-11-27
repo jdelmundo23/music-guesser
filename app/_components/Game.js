@@ -21,6 +21,7 @@ export default function Game() {
     }
     function clearArtist() {
         setArtistID(null);
+        setGameInfo(null);
     }
     return <div className="bg-zinc-900 w-screen h-screen flex flex-col items-center justify-center">
         {!artistID ? <Search onChoose={artist => setArtistID(artist)}/> : !gameInfo ? <h1 className='text-white'>Loading</h1>: <Inputs gameInfo={gameInfo} resetGame={clearArtist} nextSong={clearSong}/>}

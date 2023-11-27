@@ -33,17 +33,16 @@ export default function Player({ guessNum, link, maxGuesses }) {
             (async () => {
                 const result = await fetch(`api/audio/${link}`)
                 const buff = await result.arrayBuffer();
-                console.log(buff);
                 ctx.decodeAudioData(buff, (buffer) => {
                     setAudiobuff(cropAudioBuffer(buffer, ctx, 0, 30));
                     setLoaded(true);
                 })
             })()
         }
+        return () => ctx && ctx.close();
     }, [ctx])
 
     const startStreaming = () => {
-        console.log(times)
         setProgress(0);
         if (bufferSourceRef.current) {
             bufferSourceRef.current.stop();
