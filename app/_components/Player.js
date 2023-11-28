@@ -8,7 +8,9 @@ export default function Player({ guessNum, link, maxGuesses }) {
     const [audioBuff, setAudiobuff] = useState('');
     const [startTime, setStartTime] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [volume, setVolume] = useState(0.5);
     const intervalRef = useRef(null);
+    const volumeRef = useRef(null);
 
     const times = calculateTimes(0.5, maxGuesses, 30)
 
@@ -27,7 +29,6 @@ export default function Player({ guessNum, link, maxGuesses }) {
 
         return () => clearInterval(intervalRef.current);
     }, [isPlaying, ctx, startTime, audioBuff])
-
     useEffect(() => {
         if (ctx) {
             (async () => {
@@ -41,6 +42,11 @@ export default function Player({ guessNum, link, maxGuesses }) {
         }
         return () => ctx && ctx.close();
     }, [ctx])
+    useEffect(() => {
+        if (volumeRef.current) {
+            volumeRef.current.gain.value = volume;
+        }
+    }, [volume])
 
     const startStreaming = () => {
         setProgress(0);
@@ -48,14 +54,15 @@ export default function Player({ guessNum, link, maxGuesses }) {
             bufferSourceRef.current.stop();
         }
         const bufferSource = ctx.createBufferSource();
-        const analyser = ctx.createAnalyser();
-        analyser.fftSize = 2048;
+        const analyser = ctx.createGain();
+        volumeRef.current = analyser;
+        volumeRef.current.gain.value = volume;
 
         const buffer = cloneAudioBuffer(audioBuff, ctx);
 
         bufferSource.buffer = buffer;
-        bufferSource.connect(analyser);
-        analyser.connect(ctx.destination);
+        bufferSource.connect(volumeRef.current);
+        volumeRef.current.connect(ctx.destination);
         bufferSource.start(0);
         bufferSourceRef.current = bufferSource;
         bufferSource.onended = () => {
@@ -66,15 +73,27 @@ export default function Player({ guessNum, link, maxGuesses }) {
         setIsPlaying(true);
     }
 
+
+
     return (
-        <div>
-            {isLoaded ?
-                <button disabled={isPlaying}>
-                    <svg className={`right-2 top-2 pointer-events-none ${!isPlaying ? 'active:scale-95 opacity-100' : 'opacity-60'} active:transition duration-100`} height="50" width="50">
-                        <circle className={`pointer-events-auto ${!isPlaying && 'cursor-pointer'}`} cx="30" cy="20" r="15" fill="white" onClick={() => { startStreaming() }}></circle>
-                        <polygon points="25,12 25,28 38,20" fill="black"></polygon>;
-                    </svg>
-                </button> : <p>Loading Audio</p>}
+        <div className='w-full'>
+            <div className='flex justify-between'>
+                {isLoaded ?
+                    <>
+                        <button disabled={isPlaying}>
+                            <svg className={`right-2 top-2 pointer-events-none ${!isPlaying ? 'active:scale-95 opacity-100' : 'opacity-60'} active:transition duration-100`} height="50" width="50">
+                                <circle className={`pointer-events-auto ${!isPlaying && 'cursor-pointer'}`} cx="30" cy="20" r="15" fill="white" onClick={() => { startStreaming() }}></circle>
+                                <polygon points="25,12 25,28 38,20" fill="black"></polygon>;
+                            </svg>
+                        </button>
+                        <div className='w-32 relative pt-4'>
+                            <input className='absolute z-0 w-full range appearance-none bg-white rounded-lg h-1 cursor-pointer accent-transparent' type='range' value={volume} min={0.0} max={1.0} step={0.02} onChange={e => setVolume(e.target.value)}></input>
+                            <div className={`disabled absolute bg-black h-1 z-10`} style={{ width: `${volume * 100}%` }}></div>
+                        </div>
+                    </>
+                    : <p>Loading Audio</p>
+                }
+            </div>
             <div className="w-full h-2 relative">
                 <div className="bg-zinc-700 w-full h-2 absolute top-0 left-0 opacity-40"></div>
                 <div className="bg-zinc-700 absolute h-2 top-0 left-0" style={{ width: `${(times[guessNum] / 30) * 100}%` }}></div>
@@ -87,6 +106,7 @@ export default function Player({ guessNum, link, maxGuesses }) {
                     />
                 ))}
             </div>
+
         </div>
     )
 }
@@ -135,12 +155,12 @@ function cropAudioBuffer(originalBuffer, audioContext, startSeconds, endSeconds)
 const calculateTimes = (initial, maxGuesses, timeLimit) => {
     const times = [];
     const base = Math.pow(timeLimit / initial, 1 / maxGuesses);
-  
+
     for (let i = 0; i < maxGuesses; i++) {
         initial *= base;
         times.push(initial);
     }
     times.push(timeLimit);
-  
+
     return times;
 };
