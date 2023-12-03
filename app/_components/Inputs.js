@@ -9,6 +9,7 @@ const maxGuesses = 6;
 export default function Inputs({ gameInfo, resetGame, nextSong}) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isGameOver, setGameOver] = useState(false);
+    const times = calculateTimes(0.5, maxGuesses, 30)
     function submitAnswer(e) {
         e.preventDefault()
         const answer = e.target[activeIndex]?.value;
@@ -29,7 +30,10 @@ export default function Inputs({ gameInfo, resetGame, nextSong}) {
                 </div>
                 <div className="flex justify-center h-12">
                     {!(isGameOver || activeIndex >= maxGuesses) ? 
-                    <Button onBtnClick={null} text='SUBMIT'/>
+                    <>
+                        <Button text='SUBMIT'/>
+                        <Button onBtnClick={e => {e.preventDefault(); setActiveIndex(activeIndex + 1)}} text={activeIndex >= maxGuesses -1 ? 'GIVE UP' : `SKIP (+${times[activeIndex+1] - times[activeIndex]})`}/>
+                    </>
                     :
                     <>
                         <Button onBtnClick={resetGame} text='NEW ARTIST'/>
@@ -37,7 +41,7 @@ export default function Inputs({ gameInfo, resetGame, nextSong}) {
                     </>}
                 </div>
             </form>
-            <Player guessNum={isGameOver ? maxGuesses : activeIndex} link={gameInfo.getID()} maxGuesses={maxGuesses}/>
+            <Player guessNum={isGameOver ? maxGuesses : activeIndex} link={gameInfo.getID()} times={times}/>
             {(isGameOver || (activeIndex >= maxGuesses)) && <div className='text-white'>{gameInfo.getAnswer()}</div>}
         </div>
     )
@@ -50,3 +54,16 @@ function getBoxStatus(index, activeIndex, isGameOver) {
                 activeIndex < index ? "pending" :
                     "correct")
 }
+
+const calculateTimes = (initial, maxGuesses, timeLimit) => {
+    const times = [];
+    const base = Math.pow(timeLimit / initial, 1 / maxGuesses);
+
+    for (let i = 0; i < maxGuesses; i++) {
+        initial *= base;
+        times.push(Math.ceil(initial));
+    }
+    times.push(timeLimit);
+
+    return times;
+};

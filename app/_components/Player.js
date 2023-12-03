@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function Player({ guessNum, link, maxGuesses }) {
+export default function Player({ guessNum, link, times }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [ctx, setCtx] = useState('');
     const bufferSourceRef = useRef(null);
@@ -11,8 +11,6 @@ export default function Player({ guessNum, link, maxGuesses }) {
     const [volume, setVolume] = useState(0.5);
     const intervalRef = useRef(null);
     const volumeRef = useRef(null);
-
-    const times = calculateTimes(0.5, maxGuesses, 30)
 
     useEffect(() => {
         setCtx(new AudioContext());
@@ -91,7 +89,7 @@ export default function Player({ guessNum, link, maxGuesses }) {
                             <div className={`disabled absolute bg-black h-1 z-10`} style={{ width: `${volume * 100}%` }}></div>
                         </div>
                     </>
-                    : <p>Loading Audio</p>
+                    : <p className='text-white'>Loading Audio</p>
                 }
             </div>
             <div className="w-full h-2 relative">
@@ -151,16 +149,3 @@ function cropAudioBuffer(originalBuffer, audioContext, startSeconds, endSeconds)
 
     return croppedBuffer;
 }
-
-const calculateTimes = (initial, maxGuesses, timeLimit) => {
-    const times = [];
-    const base = Math.pow(timeLimit / initial, 1 / maxGuesses);
-
-    for (let i = 0; i < maxGuesses; i++) {
-        initial *= base;
-        times.push(initial);
-    }
-    times.push(timeLimit);
-
-    return times;
-};
