@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Inter } from "next/font/google"
 import UserCard from './UserCard.js'
 import Button from './Button.js'
-
 const inter = Inter({
     subsets: ['latin'],
 })
@@ -13,25 +12,26 @@ export default function Search({ onChoose }) {
     const [users, setUsers] = useState([]);
     const [selectedIndex, setSelected] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    async function useQuery() {
-        if (query) {
-            try {
-                const result = await fetch(`api/artists/${query}`, { cache: 'no-cache' });
-                const data = await result.json();
-                if (!result.ok) {
-                    throw new Error(data.error)
+    
+    useEffect(() => {
+        async function querySearch() {
+            if (query) {
+                try {
+                    const result = await fetch(`api/artists/${query}`, { cache: 'no-cache' });
+                    const data = await result.json();
+                    if (!result.ok) {
+                        throw new Error(data.error)
+                    }
+                    setUsers(data.users);
+                    setLoading(false);
+                    setSelected(null);
                 }
-                setUsers(data.users);
-                setLoading(false);
-                setSelected(null);
-            }
-            catch (error) {
-                console.error(error);
+                catch (error) {
+                    console.error(error);
+                }
             }
         }
-    }
-    useEffect(() => {
-        const delayFetch = setTimeout(() => useQuery(), 500);
+        const delayFetch = setTimeout(() => querySearch(), 500);
         return () => clearTimeout(delayFetch);
     }, [query]);
 
