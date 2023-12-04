@@ -13,24 +13,24 @@ export default function Search({ onChoose }) {
     const [users, setUsers] = useState([]);
     const [selectedIndex, setSelected] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    useEffect(() => {
-        async function useQuery() {
-            if (query) {
-                try {
-                    const result = await fetch(`api/artists/${query}`, { cache: 'no-cache' });
-                    const data = await result.json();
-                    if (!result.ok) {
-                        throw new Error(data.error)
-                    }
-                    setUsers(data.users);
-                    setLoading(false);
-                    setSelected(null);
+    async function useQuery() {
+        if (query) {
+            try {
+                const result = await fetch(`api/artists/${query}`, { cache: 'no-cache' });
+                const data = await result.json();
+                if (!result.ok) {
+                    throw new Error(data.error)
                 }
-                catch (error) {
-                    console.error(error);
-                }
+                setUsers(data.users);
+                setLoading(false);
+                setSelected(null);
+            }
+            catch (error) {
+                console.error(error);
             }
         }
+    }
+    useEffect(() => {
         const delayFetch = setTimeout(() => useQuery(), 500);
         return () => clearTimeout(delayFetch);
     }, [query]);
