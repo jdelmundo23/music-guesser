@@ -3,25 +3,34 @@ import { useEffect, useState, Suspense } from 'react'
 import Guess from "./Guess.js"
 import Player from "./Player.js"
 import Button from './Button.js'
+import Modal from './Modal.js'
 
 const maxGuesses = 6;
 
 export default function Inputs({ gameInfo, resetGame, nextSong}) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isGameOver, setGameOver] = useState(false);
+    const [isModalShown, setModalShown] = useState(false);
     const times = calculateTimes(0.5, maxGuesses, 30)
     function submitAnswer(e) {
         e.preventDefault()
         const answer = e.target[activeIndex]?.value;
         if (gameInfo.testAnswer(answer)) {
             setGameOver(true);
-        } else {
+            setModalShown(true);
+        } 
+        else if(activeIndex >= maxGuesses - 1){
+            setActiveIndex(activeIndex + 1);
+            setModalShown(true);
+        }
+        else {
             setActiveIndex(activeIndex + 1);
         }
-    }
+    }   
 
     return (
         <div className='w-[40%]'>
+            {(gameInfo && isModalShown) && <Modal trackTitle={gameInfo.getAnswer()} trackImg={gameInfo.getImage()} closeModal={() => setModalShown(false)} gameWon={isGameOver}/>}
             <form onSubmit={e => submitAnswer(e)} className="flex flex-col ">
                 <div className="flex flex-col gap-y-3">
                     {new Array(maxGuesses).fill(null).map((_, i) =>
@@ -32,7 +41,7 @@ export default function Inputs({ gameInfo, resetGame, nextSong}) {
                     {!(isGameOver || activeIndex >= maxGuesses) ? 
                     <>
                         <Button text='SUBMIT'/>
-                        <Button onBtnClick={e => {e.preventDefault(); setActiveIndex(activeIndex + 1)}} text={activeIndex >= maxGuesses -1 ? 'GIVE UP' : `SKIP (+${times[activeIndex+1] - times[activeIndex]})`}/>
+                        <Button onBtnClick={e => {e.preventDefault(); setActiveIndex(activeIndex + 1), activeIndex >= maxGuesses - 1 && setModalShown(true)}} text={activeIndex >= maxGuesses -1 ? 'GIVE UP' : `SKIP (+${times[activeIndex+1] - times[activeIndex]})`}/>
                     </>
                     :
                     <>
@@ -42,7 +51,6 @@ export default function Inputs({ gameInfo, resetGame, nextSong}) {
                 </div>
             </form>
             <Player guessNum={isGameOver ? maxGuesses : activeIndex} link={gameInfo.getID()} times={times}/>
-            {(isGameOver || (activeIndex >= maxGuesses)) && <div className='text-white'>{gameInfo.getAnswer()}</div>}
         </div>
     )
 }
