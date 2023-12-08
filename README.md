@@ -1,5 +1,8 @@
 *Work in Progress*
 
+*On the Vercel link, Mmst high quality tracks are incompatible with the game due to vercel's request body size limit*
+*A workaround for this will be implemented soon*
+
 # Guess The Track
 
 This web app is a game that allows the user to select an artist on SoundCloud, listen to a random track of theirs, and guess the title of the track.
