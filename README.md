@@ -1,6 +1,6 @@
 *Work in Progress*
 
-*On the Vercel link, Mmst high quality tracks are incompatible with the game due to vercel's request body size limit*
+*On the Vercel link, most high quality tracks are incompatible with the game due to vercel's request body size limit.*
 *A workaround for this will be implemented soon*
 
 # Guess The Track
