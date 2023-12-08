@@ -19,4 +19,6 @@ This web app is a game that allows the user to select an artist on SoundCloud, l
 
 - Each time you guess incorrectly, you will be allowed to listen to more of the song.
 
+- Upon guessing the correct title or failing to do so, you can either choose a new artist or try again with a new track from the same artist.
+
 *This app uses the SoundCloud V2 API to retrieve artist and track data*
